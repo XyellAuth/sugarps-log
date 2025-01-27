@@ -6,8 +6,8 @@ const compression = require('compression');
 const fs = require('fs');
 const path = require('path');
 
-// Path penyimpanan data di VPS (dengan path absolut, pastikan folder "players" ada)
-const PLAYER_DATA_DIR = path.join('C:', 'Users', 'Administrator', 'Desktop', 'CPP YIDS STORE', 'UNKNOWN CORE', 'players'); // Path Windows
+// Gunakan /tmp sebagai path penyimpanan sementara di Vercel
+const PLAYER_DATA_DIR = '/tmp/players'; // Path sementara di Vercel
 
 // Pastikan folder penyimpanan sudah ada
 if (!fs.existsSync(PLAYER_DATA_DIR)) {
@@ -47,55 +47,6 @@ app.use((req, res, next) => {
     const clientIp = req.ip || req.connection.remoteAddress;
     console.log(`[${new Date().toLocaleString()}] Client IP: ${clientIp}`);
     next();
-});
-
-// Endpoint untuk login
-app.all('/player/login/dashboard', function (req, res) {
-    const tData = {};
-    try {
-        const uData = JSON.stringify(req.body).split('"')[1].split('\\n'); 
-        const uName = uData[0].split('|'); 
-        const uPass = uData[1].split('|');
-        for (let i = 0; i < uData.length - 1; i++) { 
-            const d = uData[i].split('|'); 
-            tData[d[0]] = d[1]; 
-        }
-        if (uName[1] && uPass[1]) { 
-            res.redirect('/player/growid/login/validate'); 
-        }
-    } catch (why) { 
-        console.log(`Warning: ${why}`); 
-    }
-
-    res.render(__dirname + '/public/html/dashboard.ejs', { data: tData });
-});
-
-// Endpoint untuk validasi login
-app.all('/player/growid/login/validate', (req, res) => {
-    const _token = req.body._token;
-    const growId = req.body.growId;
-    const password = req.body.password;
-
-    const token = Buffer.from(
-        `_token=${_token}&growId=${growId}&password=${password}`,
-    ).toString('base64');
-
-    res.send(
-        `{"status":"success","message":"Account Validated.","token":"${token}","url":"","accountType":"growtopia"}`,
-    );
-});
-
-// Endpoint untuk memeriksa token
-app.all('/player/growid/checktoken', (req, res) => {
-    const refreshToken = req.body;
-    let data = {
-        status: "success",
-        message: "Account Validated",
-        token: refreshToken,
-        url: "",
-        accountType: "growtopia"
-    };
-    res.send(data);
 });
 
 // Endpoint untuk registrasi pemain
