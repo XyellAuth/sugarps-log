@@ -3,18 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const rateLimiter = require('express-rate-limit');
 const compression = require('compression');
-const fs = require('fs');
-const path = require('path');
 
-// Gunakan /tmp sebagai path penyimpanan sementara di Vercel
-const PLAYER_DATA_DIR = '/tmp/players'; // Path sementara di Vercel
-
-// Pastikan folder penyimpanan sudah ada
-if (!fs.existsSync(PLAYER_DATA_DIR)) {
-    fs.mkdirSync(PLAYER_DATA_DIR, { recursive: true });
-}
-
-// Middleware
 app.use(compression({
     level: 5,
     threshold: 0,
@@ -25,7 +14,6 @@ app.use(compression({
         return compression.filter(req, res);
     }
 }));
-
 app.set('view engine', 'ejs');
 app.set('trust proxy', 1);
 app.use(function (req, res, next) {
@@ -34,57 +22,48 @@ app.use(function (req, res, next) {
         'Access-Control-Allow-Headers',
         'Origin, X-Requested-With, Content-Type, Accept',
     );
-    console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url} - ${res.statusCode}`);
+    console.log([${new Date().toLocaleString()}] ${req.method} ${req.url} - ${res.statusCode});
     next();
 });
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(rateLimiter({ windowMs: 15 * 60 * 1000, max: 100, headers: true }));
 
-// Log IP setiap request
-app.use((req, res, next) => {
-    const clientIp = req.ip || req.connection.remoteAddress;
-    console.log(`[${new Date().toLocaleString()}] Client IP: ${clientIp}`);
-    next();
+app.all('/player/login/dashboard', function (req, res) {
+    const tData = {};
+    try {
+        const uData = JSON.stringify(req.body).split('"')[1].split('\\n'); const uName = uData[0].split('|'); const uPass = uData[1].split('|');
+        for (let i = 0; i < uData.length - 1; i++) { const d = uData[i].split('|'); tData[d[0]] = d[1]; }
+        if (uName[1] && uPass[1]) { res.redirect('/player/growid/login/validate'); }
+    } catch (why) { console.log(Warning: ${why}); }
+
+    res.render(__dirname + '/public/html/dashboard.ejs', { data: tData });
 });
 
-// Endpoint untuk registrasi pemain
-app.post('/player/growid/register/validate', (req, res) => {
-    const clientIp = req.ip || req.connection.remoteAddress;
-    console.log(`[${new Date().toLocaleString()}] Register Request from IP: ${clientIp}`);
+app.all('/player/growid/login/validate', (req, res) => {
+    const _token = req.body._token;
+    const growId = req.body.growId;
+    const password = req.body.password;
 
-    const { growId, password } = req.body;
+    const token = Buffer.from(
+        _token=${_token}&growId=${growId}&password=${password},
+    ).toString('base64');
 
-    if (!growId || !password) {
-        return res.status(400).json({ error: 'GrowID dan password harus diisi.' });
-    }
-
-    const playerDataPath = path.join(PLAYER_DATA_DIR, `${growId}.json`);
-
-    // Periksa apakah GrowID sudah terdaftar
-    if (fs.existsSync(playerDataPath)) {
-        return res.status(400).json({ error: 'GrowID sudah terdaftar.' });
-    }
-
-    const playerData = {
-        growId,
-        password,
-        registrationDate: new Date().toISOString(),
-        registeredIp: clientIp
+    res.send(
+        {"status":"success","message":"Account Validated.","token":"${token}","url":"","accountType":"growtopia"},
+    );
+});
+app.all('/player/growid/checktoken', (req, res) => {
+    const refreshToken = req.body;
+    let data = {
+        status: "success",
+        message: "Account Validated",
+        token: refreshToken,
+        url: "",
+        accountType: "growtopia"
     };
-
-    fs.writeFile(playerDataPath, JSON.stringify(playerData, null, 2), (err) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Gagal menyimpan data registrasi.' });
-        }
-
-        res.status(200).json({ message: 'Registrasi berhasil.' });
-    });
+    res.send(data);
 });
-
-// Halaman utama
 app.get('/', function (req, res) {
     res.send('Hello World!');
 });
