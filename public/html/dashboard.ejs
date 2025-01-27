@@ -123,5 +123,36 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Menangani pengalihan antara form login dan registrasi
+        const registerLink = document.getElementById('registerLink');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const authTitle = document.getElementById('authTitle');
+
+        registerLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            authTitle.textContent = 'SugarPs Register';
+        });
+
+        // Toggle password visibility
+        const toggleLogPassword = document.getElementById('toggleLogPassword');
+        const toggleRegPassword = document.getElementById('toggleRegPassword');
+        toggleLogPassword.addEventListener('click', function () {
+            const passwordField = document.getElementById('loginPassword');
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+        });
+
+        toggleRegPassword.addEventListener('click', function () {
+            const passwordField = document.getElementById('registerPassword');
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+        });
+    </script>
+
 </body>
 </html>
