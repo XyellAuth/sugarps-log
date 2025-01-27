@@ -89,7 +89,6 @@ app.get('/', function (req, res) {
     res.send('Hello World!');
 });
 
-// Jalankan server pada IP VPS dan port 17091
-app.listen(17091, '206.189.89.205', function () {
-    console.log('Listening on IP 206.189.89.205 and port 17091');
+app.listen(5000, function () {
+    console.log('Listening on port 5000');
 });
