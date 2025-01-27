@@ -10,6 +10,8 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
+            background: none; /* Menghapus background */
+            animation: none;  /* Menghapus animasi background */
         }
 
         .glass-effect {
@@ -38,8 +40,7 @@
 <body class="flex items-center justify-center min-h-screen">
 
     <div class="fixed inset-0 flex items-center justify-center">
-        <!-- Diubah dari w-96 menjadi w-80 untuk menyamakan ukuran -->
-        <div class="relative w-80 p-6 rounded-lg glass-effect border-2 border-[#87b8cc]" id="authContainer">
+        <div class="relative w-96 p-6 rounded-lg glass-effect border-2 border-[#87b8cc]" id="authContainer">
             <p class="text-white text-center font-bold text-2xl mb-6" id="authTitle">SugarPs Login</p>
             
             <!-- Error message section -->
@@ -125,34 +126,71 @@
     </div>
 
     <script>
-        // Menangani pengalihan antara form login dan registrasi
-        const registerLink = document.getElementById('registerLink');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const authTitle = document.getElementById('authTitle');
+        document.addEventListener('DOMContentLoaded', function () {
+            if (localStorage.getItem('growId')) {
+                document.getElementById('loginGrowId').value = localStorage.getItem('growId');
+            }
 
-        registerLink.addEventListener('click', function (event) {
+            const loginGrowId = document.getElementById('loginGrowId').value;
+            const loginPassword = document.getElementById('loginPassword').value;
+        });
+
+        // Login form submission
+        document.getElementById('loginButton').addEventListener('click', function (event) {
             event.preventDefault();
-            loginForm.classList.add('hidden');
-            registerForm.classList.remove('hidden');
-            authTitle.textContent = 'SugarPs Register';
+
+            const loginForm = document.getElementById('loginForm');
+            const uName = document.getElementById('loginGrowId').value;
+            const uPass = document.getElementById('loginPassword').value;
+
+            if (!uName || !uPass) {
+                document.getElementById('errorDiv').classList.remove('hidden');
+                document.getElementById('errorMessage').innerHTML = 'Username or Password is empty';
+                return;
+            } else if (uName.length < 3 || uPass.length < 3) {
+                document.getElementById('errorDiv').classList.remove('hidden');
+                document.getElementById('errorMessage').innerHTML = 'Username or Password must be at least 3 characters long';
+                return;
+            } else {
+                loginForm.submit();
+                localStorage.setItem('growId', document.getElementById('loginGrowId').value);
+            }
         });
 
-        // Toggle password visibility
-        const toggleLogPassword = document.getElementById('toggleLogPassword');
-        const toggleRegPassword = document.getElementById('toggleRegPassword');
-        toggleLogPassword.addEventListener('click', function () {
-            const passwordField = document.getElementById('loginPassword');
-            const type = passwordField.type === 'password' ? 'text' : 'password';
-            passwordField.type = type;
+        // Toggle password visibility for Login
+        document.getElementById('toggleLogPassword').addEventListener('click', function () {
+            const LpasswordField = document.getElementById('loginPassword');
+            const LpasswordFieldType = LpasswordField.getAttribute('type');
+            if (LpasswordFieldType === 'password') {
+                LpasswordField.setAttribute('type', 'text');
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                LpasswordField.setAttribute('type', 'password');
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+            }
         });
 
-        toggleRegPassword.addEventListener('click', function () {
+        // Register link logic
+        document.getElementById('registerLink').addEventListener('click', function (event) {
+            event.preventDefault();
+            // Switch to registration form
+            document.getElementById('authTitle').textContent = 'SugarPs Register';
+            document.getElementById('loginFormContainer').classList.add('hidden');
+            document.getElementById('registerFormContainer').classList.remove('hidden');
+        });
+
+        // Toggle password visibility for Registration
+        document.getElementById('toggleRegPassword').addEventListener('click', function () {
             const passwordField = document.getElementById('registerPassword');
-            const type = passwordField.type === 'password' ? 'text' : 'password';
-            passwordField.type = type;
+            const passwordType = passwordField.getAttribute('type');
+            if (passwordType === 'password') {
+                passwordField.setAttribute('type', 'text');
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                passwordField.setAttribute('type', 'password');
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+            }
         });
     </script>
-
 </body>
 </html>
