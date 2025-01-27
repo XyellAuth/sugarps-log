@@ -5,54 +5,143 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Growtopia - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3a5f, #2b4d6d, #1e3a5f);
+            animation: backgroundShift 8s infinite;
+        }
+
+        @keyframes backgroundShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+    </style>
 </head>
-<body class="flex flex-col items-center justify-center h-screen">
+<body class="flex items-center justify-center min-h-screen">
+
     <div class="fixed inset-0 flex items-center justify-center">
-        <div class="relative bg-[#2b4d6d] border-4 border-[#87b8cc] shadow-lg p-6 w-80 rounded-lg">
-            <p class="text-white text-center font-bold text-2xl">Login</p>
-            <div id="errorDiv" class="hidden flex flex-col mt-2 text-xs text-red-700 font-bold px-[5px] bg-[#2b4d6d] rounded">
-                <a id="errorMessage"></a>
+        <div class="relative w-96 p-6 rounded-lg glass-effect border-2 border-[#87b8cc]" id="authContainer">
+            <p class="text-white text-center font-bold text-2xl mb-6" id="authTitle">SugarPs Login</p>
+            
+            <!-- Error message section -->
+            <div id="errorDiv" class="hidden text-center text-red-400 text-sm mb-4 error-message">
+                <span id="errorMessage"></span>
             </div>
-            <form 
-            method="post"
-            action="/player/growid/login/validate"
-            accept-charset="UTF-8"
-            id="loginForm" class="mt-3">
-                <div class="mb-1">
-                    <input name="type" value="log" type="hidden" />
-                    <input name="_token" value="<%= JSON.stringify(data) %>" type="hidden" />
-                    <label for="loginGrowId" class="block text-white text-xs">GrowID</label>
-                    <div class="flex items-center border-2 border-[#81d4fa] rounded bg-[#2b4d6d] px-1 py-1">
-                        <i class="fas fa-user text-white mr-1 text-xs"></i>
-                        <input type="text" name="growId" id="loginGrowId" class="w-full bg-[#2b4d6d] text-white text-xs placeholder-white focus:outline-none" placeholder="Enter your growid">
+
+            <!-- Login Form -->
+            <form id="loginForm" method="post" action="/player/growid/login/validate" accept-charset="UTF-8" class="space-y-4" id="loginFormContainer">
+                <!-- GrowID Field -->
+                <div>
+                    <label for="loginGrowId" class="block text-white font-medium">GrowID</label>
+                    <div class="flex items-center bg-[#2b4d6d] border-2 border-[#81d4fa] rounded px-3 py-2">
+                        <i class="fas fa-user text-white text-sm mr-2"></i>
+                        <input type="text" name="growId" id="loginGrowId" placeholder="Enter your GrowID"
+                               class="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none">
                     </div>
                 </div>
-                <div class="mb-1">
-                    <label for="loginPassword" class="block text-white text-xs">Password</label>
-                    <div class="flex items-center border-2 border-[#81d4fa] rounded bg-[#2b4d6d] px-1 py-1">
-                        <i class="fas fa-lock text-white mr-1 text-xs"></i>
-                        <input type="password" name="password" id="loginPassword" class="w-full bg-[#2b4d6d] text-white text-xs placeholder-white focus:outline-none" placeholder="Enter your password">
-                        <button type="button" id="toggleLogPassword" class="text-white ml-2 focus:outline-none text-xs">
+
+                <!-- Password Field -->
+                <div>
+                    <label for="loginPassword" class="block text-white font-medium">Password</label>
+                    <div class="flex items-center bg-[#2b4d6d] border-2 border-[#81d4fa] rounded px-3 py-2">
+                        <i class="fas fa-lock text-white text-sm mr-2"></i>
+                        <input type="password" name="password" id="loginPassword" placeholder="Enter your password"
+                               class="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none">
+                        <button type="button" id="toggleLogPassword" class="text-white text-sm focus:outline-none ml-3">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
-                <div class="flex justify-end items-center">
-                    <button id="loginButton" class="px-2 py-1 rounded bg-[#00b8ff] text-white text-xs hover:bg-[#06a4dd] transition duration-300 ease-in-out transform hover:scale-105">Login</button>
+
+                <!-- Register Link -->
+                <div class="text-center mt-4">
+                    <p class="text-white text-sm">
+                        Don't have an account? <a href="#" id="registerLink" class="text-[#00b8ff]">Register here!</a>
+                    </p>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button type="submit" id="loginButton"
+                            class="px-6 py-2 bg-gradient-to-r from-[#00b8ff] to-[#0072ff] text-white font-medium rounded shadow-lg hover:shadow-xl transform transition duration-300 ease-in-out">
+                        Login
+                    </button>
+                </div>
+            </form>
+
+            <!-- Registration Form (Hidden initially) -->
+            <form id="registerForm" method="post" action="/player/growid/register/validate" accept-charset="UTF-8" class="space-y-4 hidden" id="registerFormContainer">
+                <!-- GrowID Field -->
+                <div>
+                    <label for="registerGrowId" class="block text-white font-medium">GrowID</label>
+                    <div class="flex items-center bg-[#2b4d6d] border-2 border-[#81d4fa] rounded px-3 py-2">
+                        <i class="fas fa-user text-white text-sm mr-2"></i>
+                        <input type="text" name="growId" id="registerGrowId" placeholder="Enter your GrowID"
+                               class="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <label for="registerPassword" class="block text-white font-medium">Password</label>
+                    <div class="flex items-center bg-[#2b4d6d] border-2 border-[#81d4fa] rounded px-3 py-2">
+                        <i class="fas fa-lock text-white text-sm mr-2"></i>
+                        <input type="password" name="password" id="registerPassword" placeholder="Enter your password"
+                               class="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none">
+                        <button type="button" id="toggleRegPassword" class="text-white text-sm focus:outline-none ml-3">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button type="submit" id="registerButton"
+                            class="px-6 py-2 bg-gradient-to-r from-[#00b8ff] to-[#0072ff] text-white font-medium rounded shadow-lg hover:shadow-xl transform transition duration-300 ease-in-out">
+                        Register
+                    </button>
                 </div>
             </form>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             if (localStorage.getItem('growId')) {
                 document.getElementById('loginGrowId').value = localStorage.getItem('growId');
             }
 
-            const loginGrowId = document.getElementById('loginGrowId').value
-            const loginPassword = document.getElementById('loginPassword').value
+            const loginGrowId = document.getElementById('loginGrowId').value;
+            const loginPassword = document.getElementById('loginPassword').value;
         });
+
+        // Login form submission
         document.getElementById('loginButton').addEventListener('click', function (event) {
             event.preventDefault();
 
@@ -72,15 +161,39 @@
                 loginForm.submit();
                 localStorage.setItem('growId', document.getElementById('loginGrowId').value);
             }
-        })
+        });
+
+        // Toggle password visibility for Login
         document.getElementById('toggleLogPassword').addEventListener('click', function () {
-            const LpasswordField = document.getElementById('loginPassword')
+            const LpasswordField = document.getElementById('loginPassword');
             const LpasswordFieldType = LpasswordField.getAttribute('type');
             if (LpasswordFieldType === 'password') {
                 LpasswordField.setAttribute('type', 'text');
                 this.innerHTML = '<i class="fas fa-eye-slash"></i>';
             } else {
                 LpasswordField.setAttribute('type', 'password');
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+
+        // Register link logic
+        document.getElementById('registerLink').addEventListener('click', function (event) {
+            event.preventDefault();
+            // Switch to registration form
+            document.getElementById('authTitle').textContent = 'SugarPs Register';
+            document.getElementById('loginFormContainer').classList.add('hidden');
+            document.getElementById('registerFormContainer').classList.remove('hidden');
+        });
+
+        // Toggle password visibility for Registration
+        document.getElementById('toggleRegPassword').addEventListener('click', function () {
+            const passwordField = document.getElementById('registerPassword');
+            const passwordType = passwordField.getAttribute('type');
+            if (passwordType === 'password') {
+                passwordField.setAttribute('type', 'text');
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                passwordField.setAttribute('type', 'password');
                 this.innerHTML = '<i class="fas fa-eye"></i>';
             }
         });
