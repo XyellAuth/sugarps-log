@@ -10,18 +10,19 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #e0f7fa;  /* Ganti background body menjadi warna netral */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            background: linear-gradient(135deg, #1e3a5f, #2b4d6d, #1e3a5f);
+            animation: backgroundShift 8s infinite;
         }
 
-        /* Menghapus efek latar belakang kaca pada dashboard */
+        @keyframes backgroundShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .glass-effect {
-            background: transparent; /* Menghilangkan latar belakang */
-            backdrop-filter: none;   /* Menghapus efek blur */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
@@ -42,9 +43,10 @@
         }
     </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen">
+
     <div class="fixed inset-0 flex items-center justify-center">
-        <div class="relative w-80 p-6 rounded-lg glass-effect border-2 border-[#87b8cc]" id="authContainer">
+        <div class="relative w-96 p-6 rounded-lg glass-effect border-2 border-[#87b8cc]" id="authContainer">
             <p class="text-white text-center font-bold text-2xl mb-6" id="authTitle">SugarPs Login</p>
             
             <!-- Error message section -->
