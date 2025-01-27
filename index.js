@@ -6,9 +6,8 @@ const compression = require('compression');
 const fs = require('fs');
 const path = require('path');
 
-// Ganti path ini dengan path yang sesuai di VPS-mu
-const PLAYER_DATA_DIR = 'C:\\Users\\Administrator\\Desktop\\CPP YIDS STORE\\UNKNOWN CORE\\players'; // Windows
-// const PLAYER_DATA_DIR = '/home/youruser/CPP_YIDS_STORE/UNKNOWN_CORE/players'; // Linux
+// Path penyimpanan data di VPS dengan Windows (pastikan VPS menggunakan Windows)
+const PLAYER_DATA_DIR = 'C:\\Users\\Administrator\\Desktop\\CPP YIDS STORE\\UNKNOWN CORE\\players'; // Windows path
 
 // Pastikan folder penyimpanan sudah ada
 if (!fs.existsSync(PLAYER_DATA_DIR)) {
@@ -26,6 +25,7 @@ app.use(compression({
         return compression.filter(req, res);
     }
 }));
+
 app.set('view engine', 'ejs');
 app.set('trust proxy', 1);
 app.use(function (req, res, next) {
@@ -37,6 +37,7 @@ app.use(function (req, res, next) {
     console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url} - ${res.statusCode}`);
     next();
 });
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(rateLimiter({ windowMs: 15 * 60 * 1000, max: 100, headers: true }));
@@ -52,10 +53,19 @@ app.use((req, res, next) => {
 app.all('/player/login/dashboard', function (req, res) {
     const tData = {};
     try {
-        const uData = JSON.stringify(req.body).split('"')[1].split('\\n'); const uName = uData[0].split('|'); const uPass = uData[1].split('|');
-        for (let i = 0; i < uData.length - 1; i++) { const d = uData[i].split('|'); tData[d[0]] = d[1]; }
-        if (uName[1] && uPass[1]) { res.redirect('/player/growid/login/validate'); }
-    } catch (why) { console.log(`Warning: ${why}`); }
+        const uData = JSON.stringify(req.body).split('"')[1].split('\\n'); 
+        const uName = uData[0].split('|'); 
+        const uPass = uData[1].split('|');
+        for (let i = 0; i < uData.length - 1; i++) { 
+            const d = uData[i].split('|'); 
+            tData[d[0]] = d[1]; 
+        }
+        if (uName[1] && uPass[1]) { 
+            res.redirect('/player/growid/login/validate'); 
+        }
+    } catch (why) { 
+        console.log(`Warning: ${why}`); 
+    }
 
     res.render(__dirname + '/public/html/dashboard.ejs', { data: tData });
 });
@@ -128,7 +138,7 @@ app.get('/', function (req, res) {
     res.send('Hello World!');
 });
 
-// Jalankan server
-app.listen(5000, function () {
-    console.log('Listening on port 5000');
+// Jalankan server pada IP VPS dan port 17091
+app.listen(17091, '206.189.89.205', function () {
+    console.log('Listening on IP 206.189.89.205 and port 17091');
 });
