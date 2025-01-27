@@ -10,8 +10,14 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: none; /* Menghapus background */
-            animation: none;  /* Menghapus animasi background */
+            background: linear-gradient(135deg, #1e3a5f, #2b4d6d, #1e3a5f);
+            animation: backgroundShift 8s infinite;
+        }
+
+        @keyframes backgroundShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .glass-effect {
