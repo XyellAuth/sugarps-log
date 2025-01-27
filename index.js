@@ -6,8 +6,8 @@ const compression = require('compression');
 const fs = require('fs');
 const path = require('path');
 
-// Path penyimpanan data di VPS dengan Windows (pastikan VPS menggunakan Windows)
-const PLAYER_DATA_DIR = 'C:\\Users\\Administrator\\Desktop\\CPP YIDS STORE\\UNKNOWN CORE\\players'; // Windows path
+// Path penyimpanan data di VPS (dengan path relatif, pastikan folder "players" ada)
+const PLAYER_DATA_DIR = './players'; // Path yang relatif
 
 // Pastikan folder penyimpanan sudah ada
 if (!fs.existsSync(PLAYER_DATA_DIR)) {
